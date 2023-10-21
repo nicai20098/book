@@ -11,7 +11,7 @@
 .classpath
 .factorypath
 .gradle
-.idea
+2.2.1.RELEASE/.idea
 .metadata
 .project
 .recommenders
