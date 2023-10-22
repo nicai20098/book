@@ -68,6 +68,8 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @since 1.3.0
  * @see EnableAutoConfiguration
+ * DeferredImportSelector 和 ImportSelector 区别DeferredImportSelector是ImportSelector子类 前者在所有的@Configuration类加载完成之后在加载返回的配置类
+ * 而后者是在加载完@Configuration类之前先去加载返回的配置类
  */
 public class AutoConfigurationImportSelector implements DeferredImportSelector, BeanClassLoaderAware,
 		ResourceLoaderAware, BeanFactoryAware, EnvironmentAware, Ordered {
@@ -90,13 +92,17 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 	@Override
 	public String[] selectImports(AnnotationMetadata annotationMetadata) {
+		//检查自动配置是否开启 默认开启
 		if (!isEnabled(annotationMetadata)) {
 			return NO_IMPORTS;
 		}
+		//加载自动配置的元信息，配置文件为类路径中META-INF目录下
 		AutoConfigurationMetadata autoConfigurationMetadata = AutoConfigurationMetadataLoader
 				.loadMetadata(this.beanClassLoader);
+		//封装将被引入的自动配置信息
 		AutoConfigurationEntry autoConfigurationEntry = getAutoConfigurationEntry(autoConfigurationMetadata,
 				annotationMetadata);
+		//返回符合条件的配置类的全限定名数组
 		return StringUtils.toStringArray(autoConfigurationEntry.getConfigurations());
 	}
 
@@ -109,17 +115,27 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	 */
 	protected AutoConfigurationEntry getAutoConfigurationEntry(AutoConfigurationMetadata autoConfigurationMetadata,
 			AnnotationMetadata annotationMetadata) {
+		//检查自动配置是否开启
 		if (!isEnabled(annotationMetadata)) {
 			return EMPTY_ENTRY;
 		}
 		AnnotationAttributes attributes = getAttributes(annotationMetadata);
+		//通过SpringFactoriesLoader类提供的方法加载类路径中META-INF目录下的
+		//spring.factories文件中针对EnableAutoConfiguration的注册配置类
 		List<String> configurations = getCandidateConfigurations(annotationMetadata, attributes);
+		//对获取的注册配置类集合进行去重处理，防止多个项目引入同样的配置类
 		configurations = removeDuplicates(configurations);
+		//获取被排除类集合
 		Set<String> exclusions = getExclusions(annotationMetadata, attributes);
+		//检查排除的类是否可实例化，是否被自动注册胚子所使用，不符合条件则抛出异常
 		checkExcludedClasses(configurations, exclusions);
+		//从自动配置类集合中去除被排除的类
 		configurations.removeAll(exclusions);
+		//检查配置类的注解是否符合spring.factories文件中AutoConfigurationImportFilter指定的注解检条件
 		configurations = filter(configurations, autoConfigurationMetadata);
+		//将筛选完成的配置类和排查的配置类构建为事件类，并传入监听器。监听器的配置在于spring.factories文件中，通过AutoConfigurationImportListener指定
 		fireAutoConfigurationImportEvents(configurations, exclusions);
+		//返回自动配置类全限定名的数组
 		return new AutoConfigurationEntry(configurations, exclusions);
 	}
 

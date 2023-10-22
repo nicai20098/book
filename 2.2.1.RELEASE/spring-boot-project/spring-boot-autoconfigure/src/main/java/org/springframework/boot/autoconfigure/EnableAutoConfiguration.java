@@ -83,11 +83,13 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 @Import(AutoConfigurationImportSelector.class)
 public @interface EnableAutoConfiguration {
 
+	//用来覆盖配置开启/关闭自动配置的功能
 	String ENABLED_OVERRIDE_PROPERTY = "spring.boot.enableautoconfiguration";
 
 	/**
 	 * Exclude specific auto-configuration classes such that they will never be applied.
 	 * @return the classes to exclude
+	 * 根据类排除指定的自动配置
 	 */
 	Class<?>[] exclude() default {};
 
@@ -96,6 +98,7 @@ public @interface EnableAutoConfiguration {
 	 * applied.
 	 * @return the class names to exclude
 	 * @since 1.3.0
+	 * 根据类明排除指定的自动配置
 	 */
 	String[] excludeName() default {};
 
