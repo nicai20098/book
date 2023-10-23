@@ -202,11 +202,13 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 	private void checkExcludedClasses(List<String> configurations, Set<String> exclusions) {
 		List<String> invalidExcludes = new ArrayList<>(exclusions.size());
+		// 遍历并判断是否存在对应的配置类
 		for (String exclusion : exclusions) {
 			if (ClassUtils.isPresent(exclusion, getClass().getClassLoader()) && !configurations.contains(exclusion)) {
 				invalidExcludes.add(exclusion);
 			}
 		}
+		// 如果不为空，就进行处理
 		if (!invalidExcludes.isEmpty()) {
 			handleInvalidExcludes(invalidExcludes);
 		}
@@ -216,6 +218,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	 * Handle any invalid excludes that have been specified.
 	 * @param invalidExcludes the list of invalid excludes (will always have at least one
 	 * element)
+	 * 抛出指定异常
 	 */
 	protected void handleInvalidExcludes(List<String> invalidExcludes) {
 		StringBuilder message = new StringBuilder();
@@ -235,6 +238,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	 * @return exclusions or an empty set
 	 */
 	protected Set<String> getExclusions(AnnotationMetadata metadata, AnnotationAttributes attributes) {
+		// 创建Set集合并把待排除的内容存于集合内，LinkedHashSet具有不可重复性
 		Set<String> excluded = new LinkedHashSet<>();
 		excluded.addAll(asList(attributes, "exclude"));
 		excluded.addAll(Arrays.asList(attributes.getStringArray("excludeName")));

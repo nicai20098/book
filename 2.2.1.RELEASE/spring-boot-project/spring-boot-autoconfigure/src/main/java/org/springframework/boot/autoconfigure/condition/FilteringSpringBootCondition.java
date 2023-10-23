@@ -60,6 +60,7 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 		return match;
 	}
 
+	// 过滤核心功能 该方法由子类实现
 	protected abstract ConditionOutcome[] getOutcomes(String[] autoConfigurationClasses,
 			AutoConfigurationMetadata autoConfigurationMetadata);
 

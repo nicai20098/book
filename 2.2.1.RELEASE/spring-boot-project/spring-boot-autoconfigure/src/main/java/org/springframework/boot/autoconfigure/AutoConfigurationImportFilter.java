@@ -53,6 +53,8 @@ public interface AutoConfigurationImportFilter {
 	 * be imported. The returned array must be the same size as the incoming
 	 * {@code autoConfigurationClasses} parameter. Entries containing {@code false} will
 	 * not be imported.
+	 * // 参数 autoConfigurationClasses 待过滤的自动配置类数组
+	 * // 参数 autoConfigurationMetadata 自动配置的元数据信息
 	 */
 	boolean[] match(String[] autoConfigurationClasses, AutoConfigurationMetadata autoConfigurationMetadata);
 
