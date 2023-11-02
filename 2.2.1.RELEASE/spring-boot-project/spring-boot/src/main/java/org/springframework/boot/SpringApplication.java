@@ -268,9 +268,13 @@ public class SpringApplication {
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
+		//推断web应用类型
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
+		//加载并初始化ApplicationContextInitializer及相关实现类
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+		//加载并初始化ApplicationListener及相关实现类
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+		//推断main方法Class类
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
@@ -1223,6 +1227,7 @@ public class SpringApplication {
 	 * @return the running {@link ApplicationContext}
 	 */
 	public static ConfigurableApplicationContext run(Class<?>[] primarySources, String[] args) {
+		//创建SpringApplication 并运行
 		return new SpringApplication(primarySources).run(args);
 	}
 
